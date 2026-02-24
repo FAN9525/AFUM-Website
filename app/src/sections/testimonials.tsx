@@ -66,20 +66,15 @@ export function Testimonials() {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
   };
   
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-    }),
-  };
+  const getInitialPosition = () => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+  });
+  
+  const getExitPosition = () => ({
+    x: direction < 0 ? 300 : -300,
+    opacity: 0,
+  });
   
   return (
     <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
@@ -140,14 +135,12 @@ export function Testimonials() {
             
             {/* Testimonial Content */}
             <div className="relative min-h-[240px] flex items-center justify-center pt-8">
-              <AnimatePresence mode="wait" custom={direction}>
+              <AnimatePresence mode="wait">
                 <motion.div
                   key={currentIndex}
-                  custom={direction}
-                  variants={variants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
+                  initial={getInitialPosition()}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={getExitPosition()}
                   transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className="text-center"
                 >
@@ -179,7 +172,7 @@ export function Testimonials() {
                 variant="outline"
                 size="icon"
                 onClick={goToPrevious}
-                className="rounded-full border-[#1a1a2e]/20 hover:bg-[#1a1a2e] hover:text-white transition-colors"
+                className="rounded-full border-[#1a1]/:bg-[#1a1a2e] hover:text-white transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>

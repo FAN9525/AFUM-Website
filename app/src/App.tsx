@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Header from './sections/Header';
-import Hero from './sections/Hero';
-import StatsBar from './sections/StatsBar';
-import About from './sections/About';
-import Products from './sections/Products';
-import BrokerBenefits from './sections/BrokerBenefits';
-import AFAssist from './sections/AFAssist';
-import Testimonials from './sections/Testimonials';
-import Contact from './sections/Contact';
-import Footer from './sections/Footer';
+import { Header } from './sections/header';
+import { Hero } from './sections/hero';
+import { StatsBar } from './sections/stats-bar';
+import { About } from './sections/about';
+import { Products } from './sections/products';
+import { BrokerBenefits } from './sections/broker-benefits';
+import { AFAssist } from './sections/af-assist';
+import { Testimonials } from './sections/testimonials';
+import { Contact } from './sections/contact';
+import { Footer } from './sections/footer';
 import ScrollIndicator from './components/ScrollIndicator';
 
 function App() {
