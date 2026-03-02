@@ -7,7 +7,7 @@ import { About } from './sections/about';
 import { Products } from './sections/products';
 import { BrokerBenefits } from './sections/broker-benefits';
 import { AFAssist } from './sections/af-assist';
-import { Testimonials } from './sections/testimonials';
+// import { Testimonials } from './sections/testimonials';
 import { Contact } from './sections/contact';
 import { Footer } from './sections/footer';
 import ScrollIndicator from './components/ScrollIndicator';
