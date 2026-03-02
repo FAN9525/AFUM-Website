@@ -110,7 +110,9 @@ export function Products() {
                   <img
                     src={product.logo}
                     alt={product.shortTitle}
-                    className="max-h-28 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                    className={`w-auto object-contain group-hover:scale-105 transition-transform duration-300 ${
+                      product.title === 'Hospitality Insurance' ? 'max-h-36' : 'max-h-28'
+                    }`}
                   />
                 </div>
                 
@@ -158,7 +160,9 @@ export function Products() {
                 <img
                   src={selectedProduct.logo}
                   alt={selectedProduct.shortTitle}
-                  className="h-28 w-auto object-contain"
+                  className={`w-auto object-contain ${
+                    selectedProduct.title === 'Hospitality Insurance' ? 'h-36' : 'h-28'
+                  }`}
                 />
               )}
               <DialogTitle className="text-2xl text-[#1a1a2e] text-center" style={{ fontFamily: 'Playfair Display, serif' }}>
