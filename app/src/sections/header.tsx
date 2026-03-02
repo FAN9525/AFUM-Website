@@ -57,15 +57,15 @@ export function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a 
-            href="#home" 
+          <a
+            href="#home"
             onClick={(e) => { e.preventDefault(); scrollToSection('#home'); }}
             className="flex items-center group"
           >
-            <img 
-              src="/images/af-logo.png" 
-              alt="Admin Focus Underwriting Managers" 
-              className="h-14 w-auto object-contain"
+            <img
+              src="/images/af-logo.png"
+              alt="Admin Focus Underwriting Managers"
+              className="h-16 w-auto object-contain"
             />
           </a>
 
@@ -135,10 +135,10 @@ export function Header() {
             <SheetContent side="right" className="w-80 bg-white">
               <div className="flex flex-col gap-6 mt-8">
                 {/* Mobile Logo */}
-                <img 
-                  src="/images/af-logo.png" 
-                  alt="Admin Focus Underwriting Managers" 
-                  className="h-12 w-auto object-contain mb-4"
+                <img
+                  src="/images/af-logo.png"
+                  alt="Admin Focus Underwriting Managers"
+                  className="h-14 w-auto object-contain mb-4"
                 />
                 {navLinks.map((link) => (
                   <div key={link.name}>

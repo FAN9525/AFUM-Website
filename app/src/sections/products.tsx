@@ -106,11 +106,11 @@ export function Products() {
             >
               <div className="bg-white rounded-2xl p-6 h-full shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
                 {/* Logo */}
-                <div className="mb-5 flex justify-center h-24 items-center">
-                  <img 
-                    src={product.logo} 
+                <div className="mb-5 flex justify-center h-28 items-center">
+                  <img
+                    src={product.logo}
                     alt={product.shortTitle}
-                    className="max-h-24 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                    className="max-h-28 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 
@@ -155,10 +155,10 @@ export function Products() {
           <DialogHeader>
             <div className="flex flex-col items-center gap-3 mb-2">
               {selectedProduct && (
-                <img 
-                  src={selectedProduct.logo} 
+                <img
+                  src={selectedProduct.logo}
                   alt={selectedProduct.shortTitle}
-                  className="h-24 w-auto object-contain"
+                  className="h-28 w-auto object-contain"
                 />
               )}
               <DialogTitle className="text-2xl text-[#1a1a2e] text-center" style={{ fontFamily: 'Playfair Display, serif' }}>
