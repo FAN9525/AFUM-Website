@@ -44,9 +44,9 @@ export function Shorekeeper() {
           </span>
           <div className="bg-white rounded-2xl shadow-md px-10 py-6 inline-flex items-center justify-center border border-gray-100">
             <img
-              src="/images/Shorekeeper_word_cropped.png"
+              src="/images/Shorekeeper_logo_cropped.png"
               alt="Shorekeeper"
-              className="h-14 w-auto object-contain"
+              className="h-20 w-auto object-contain"
             />
           </div>
           <div className="w-20 h-1 bg-[#8B1E1E] rounded-full mt-8" />
