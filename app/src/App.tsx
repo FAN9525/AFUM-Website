@@ -7,6 +7,7 @@ import { About } from './sections/about';
 import { Products } from './sections/products';
 import { BrokerBenefits } from './sections/broker-benefits';
 import { AFAssist } from './sections/af-assist';
+import { Shorekeeper } from './sections/shorekeeper';
 // import { Testimonials } from './sections/testimonials';
 import { Contact } from './sections/contact';
 import { Footer } from './sections/footer';
@@ -62,6 +63,7 @@ function App() {
             <Products />
             <BrokerBenefits />
             <AFAssist />
+            <Shorekeeper />
             {/* <Testimonials /> */}
             <Contact />
           </main>

@@ -18,6 +18,7 @@ const navLinks = [
     ]
   },
   { name: 'Partnership', href: '#benefits' },
+  { name: 'Shorekeeper', href: '#shorekeeper' },
   { name: 'Contact', href: '#contact' },
 ];
 
