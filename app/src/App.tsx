@@ -13,8 +13,12 @@ import { Contact } from './sections/contact';
 import { Footer } from './sections/footer';
 import ScrollIndicator from './components/ScrollIndicator';
 import { EveWidget } from './components/EveWidget';
+import { AdminPage } from './pages/AdminPage';
 
 function App() {
+  if (window.location.pathname.startsWith('/admin')) {
+    return <AdminPage />;
+  }
   const [isLoading,         setIsLoading]         = useState(true);
   const [eveProductContext, setEveProductContext]  = useState('');
   const [eveForceOpen,      setEveForceOpen]       = useState(false);
