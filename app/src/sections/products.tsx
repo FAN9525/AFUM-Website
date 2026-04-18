@@ -187,13 +187,25 @@ export function Products() {
             </div>
             <Button 
               onClick={() => {
+                const title = selectedProduct?.title ?? '';
                 setSelectedProduct(null);
-                document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+                window.dispatchEvent(
+                  new CustomEvent('eve:open', { detail: { productContext: title } }),
+                );
               }}
               className="w-full bg-[#8B1E1E] hover:bg-[#6B1717] text-white font-semibold"
             >
-              Speak to a Partner
+              Chat with EVE
             </Button>
+            <button
+              onClick={() => {
+                setSelectedProduct(null);
+                document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full text-center text-sm text-gray-500 hover:text-[#8B1E1E] transition-colors mt-1"
+            >
+              Speak to a partner directly →
+            </button>
           </div>
         </DialogContent>
       </Dialog>

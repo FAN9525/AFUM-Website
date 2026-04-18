@@ -12,16 +12,26 @@ import { Shorekeeper } from './sections/shorekeeper';
 import { Contact } from './sections/contact';
 import { Footer } from './sections/footer';
 import ScrollIndicator from './components/ScrollIndicator';
+import { EveWidget } from './components/EveWidget';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading,         setIsLoading]         = useState(true);
+  const [eveProductContext, setEveProductContext]  = useState('');
+  const [eveForceOpen,      setEveForceOpen]       = useState(false);
 
   useEffect(() => {
-    // Simulate initial load
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+    const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ productContext: string }>).detail;
+      setEveProductContext(detail.productContext ?? '');
+      setEveForceOpen(true);
+    };
+    window.addEventListener('eve:open', handler);
+    return () => window.removeEventListener('eve:open', handler);
   }, []);
 
   return (
@@ -69,6 +79,11 @@ function App() {
           </main>
           <Footer />
           <ScrollIndicator />
+          <EveWidget
+            productContext={eveProductContext}
+            forceOpen={eveForceOpen}
+            onOpenHandled={() => setEveForceOpen(false)}
+          />
         </motion.div>
       )}
     </AnimatePresence>
