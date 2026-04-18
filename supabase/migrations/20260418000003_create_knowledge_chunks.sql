@@ -2,7 +2,7 @@ create table public.knowledge_chunks (
   id            uuid        primary key default gen_random_uuid(),
   product_slug  text        references public.products(slug) on delete cascade,
   content       text        not null,
-  embedding     vector(1536),          -- dimensions for text-embedding-3-small
+  embedding     extensions.vector(1536), -- dimensions for text-embedding-3-small
   chunk_index   int         not null,
   source_file   text        not null,
   token_count   int,
@@ -16,7 +16,7 @@ comment on table public.knowledge_chunks is
 -- lists = sqrt(expected row count); start with 100 and tune after ingestion
 create index knowledge_chunks_embedding_idx
   on public.knowledge_chunks
-  using ivfflat (embedding vector_cosine_ops)
+  using ivfflat (embedding extensions.vector_cosine_ops)
   with (lists = 100);
 
 -- Index for fast product-scoped retrieval
