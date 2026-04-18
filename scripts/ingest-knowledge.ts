@@ -2,19 +2,22 @@ import fs from 'fs';
 import path from 'path';
 import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const CHUNK_TOKENS   = 500;   // target tokens per chunk
 const OVERLAP_TOKENS = 50;    // overlap between chunks
-const EMBED_MODEL    = 'voyage-3';
-const EMBED_DIMS     = 1024;
-const BATCH_SIZE     = 8;     // Voyage allows up to 128; keep small for safety
+const EMBED_MODEL    = 'text-embedding-3-small';
+const EMBED_DIMS     = 1536;
+const BATCH_SIZE     = 16;    // OpenAI allows up to 2048 inputs per request
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
+
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // ── Chunking ──────────────────────────────────────────────────────────────────
 
@@ -40,30 +43,17 @@ function chunkText(text: string, chunkTokens: number, overlapTokens: number): st
   return chunks;
 }
 
-// ── Embedding (Voyage AI REST API) ────────────────────────────────────────────
+// ── Embedding (OpenAI) ────────────────────────────────────────────────────────
 
 async function embedBatch(texts: string[]): Promise<number[][]> {
-  const res = await fetch('https://api.voyageai.com/v1/embeddings', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.VOYAGE_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model:      EMBED_MODEL,
-      input:      texts,
-      input_type: 'document',
-    }),
+  const response = await openai.embeddings.create({
+    model:      EMBED_MODEL,
+    input:      texts,
+    dimensions: EMBED_DIMS,
   });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Voyage AI error ${res.status}: ${err}`);
-  }
-
-  const json = await res.json() as { data: { index: number; embedding: number[] }[] };
-  // Sort by index to guarantee order matches input
-  return json.data.sort((a, b) => a.index - b.index).map(d => d.embedding);
+  return response.data
+    .sort((a, b) => a.index - b.index)
+    .map(d => d.embedding);
 }
 
 // ── Ingest ────────────────────────────────────────────────────────────────────
@@ -146,7 +136,7 @@ async function main() {
     process.exit(1);
   }
 
-  const missing = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'VOYAGE_API_KEY']
+  const missing = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'OPENAI_API_KEY']
     .filter(k => !process.env[k]);
   if (missing.length) {
     console.error(`Missing env vars: ${missing.join(', ')}`);
