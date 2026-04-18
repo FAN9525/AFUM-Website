@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { FileText, Users, BarChart3 } from 'lucide-react';
+import { FileText, Users, BarChart3, LogIn, ExternalLink } from 'lucide-react';
 
 const audiences = [
   {
@@ -138,6 +138,33 @@ export function Shorekeeper() {
             </motion.div>
           ))}
         </div>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-14"
+        >
+          <a
+            href="https://dev.shorekeeper.co.za/login"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-[#8B1E1E] hover:bg-[#7a1a1a] text-white font-semibold px-8 py-3.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 group"
+          >
+            <LogIn className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
+            Sign In to Shorekeeper
+          </a>
+          <a
+            href="https://www.shorekeeper.co.za"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 border-2 border-[#1a1a2e] text-[#1a1a2e] hover:bg-[#1a1a2e] hover:text-white font-semibold px-8 py-3.5 rounded-lg transition-all duration-200 group"
+          >
+            Visit Shorekeeper
+            <ExternalLink className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+        </motion.div>
 
       </div>
     </section>
