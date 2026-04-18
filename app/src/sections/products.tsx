@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const products = [
   {
@@ -170,6 +170,9 @@ export function Products() {
               </DialogTitle>
             </div>
           </DialogHeader>
+          <DialogDescription className="sr-only">
+            {selectedProduct?.description}
+          </DialogDescription>
           <div className="space-y-4">
             <p className="text-gray-600 leading-relaxed">
               {selectedProduct?.details}

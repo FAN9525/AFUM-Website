@@ -38,7 +38,10 @@ export function useEveChat({ productContext }: UseEveChatOptions) {
 
       const res = await fetch(EDGE_FUNCTION_URL, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
         body:    JSON.stringify({
           session_id:      sessionIdRef.current,
           product_context: productContext,
