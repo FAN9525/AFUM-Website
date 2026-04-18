@@ -1,2 +1,10 @@
 .vercel
 .env*.local
+
+# Ingestion script secrets
+scripts/.env
+
+# Supabase local dev
+supabase/.temp/
+supabase/.branches/
+
