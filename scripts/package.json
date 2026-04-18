@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
-    "dotenv": "^16.5.0",
-    "openai": "^4.103.0",
-    "tiktoken": "^1.0.21"
+    "dotenv": "^16.5.0"
   }
 }

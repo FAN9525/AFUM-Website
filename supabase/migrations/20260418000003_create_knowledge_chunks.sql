@@ -2,7 +2,7 @@ create table public.knowledge_chunks (
   id            uuid        primary key default gen_random_uuid(),
   product_slug  text        references public.products(slug) on delete cascade,
   content       text        not null,
-  embedding     extensions.vector(1536), -- dimensions for text-embedding-3-small
+  embedding     extensions.vector(1024), -- dimensions for voyage-3 (Voyage AI)
   chunk_index   int         not null,
   source_file   text        not null,
   token_count   int,
