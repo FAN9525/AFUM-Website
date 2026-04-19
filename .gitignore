@@ -11,3 +11,5 @@ scripts/node_modules/
 supabase/.temp/
 supabase/.branches/
 
+# Cursor IDE (contains MCP access tokens)
+.cursor/

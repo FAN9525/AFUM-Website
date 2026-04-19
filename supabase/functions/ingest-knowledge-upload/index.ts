@@ -9,7 +9,6 @@ type DocType = 'wording' | 'limits' | 'underwriting';
 
 interface RequestBody {
   action:       Action;
-  secret:       string;
   product_slug: string;
   doc_type?:    DocType;
   filename?:    string;
@@ -207,10 +206,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
     return jsonResponse({ error: 'Invalid JSON' }, 400);
   }
 
-  // Validate admin secret
-  const adminSecret = Deno.env.get('ADMIN_SECRET');
-  if (!adminSecret || body.secret !== adminSecret) {
-    return jsonResponse({ error: 'Unauthorised' }, 401);
+  // Validate caller via Supabase JWT
+  const authHeader = req.headers.get('Authorization') ?? '';
+  const token      = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (!token) {
+    return jsonResponse({ error: 'Unauthorised — missing Bearer token' }, 401);
+  }
+  const { data: userData, error: authError } = await supabase.auth.getUser(token);
+  if (authError || !userData.user) {
+    return jsonResponse({ error: 'Unauthorised — invalid or expired session' }, 401);
   }
 
   // Validate product slug
