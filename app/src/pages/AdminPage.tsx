@@ -53,6 +53,11 @@ import {
   ChevronUp,
   Save,
   Inbox,
+  X,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Clock,
 } from 'lucide-react';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -92,10 +97,12 @@ interface DocSummary {
   latest_upload: string;
 }
 
-type UploadStatus = 'idle' | 'parsing' | 'ingesting' | 'done' | 'error';
+type QueueItemStatus = 'queued' | 'parsing' | 'ingesting' | 'done' | 'error';
 
-interface UploadState {
-  status:  UploadStatus;
+interface QueueItem {
+  id:      string;
+  file:    File;
+  status:  QueueItemStatus;
   message: string;
   chunks?: number;
 }
@@ -254,55 +261,121 @@ function LoginGate({ onSession }: { onSession: (s: Session) => void }) {
 // ── Upload zone ───────────────────────────────────────────────────────────────
 
 interface UploadZoneProps {
-  file:         File | null;
-  onFileChange: (f: File | null) => void;
+  onFilesAdded: (files: File[]) => void;
+  disabled?:    boolean;
 }
 
-function UploadZone({ file, onFileChange }: UploadZoneProps) {
+function UploadZone({ onFilesAdded, disabled }: UploadZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragging(false);
-    const dropped = e.dataTransfer.files[0];
-    if (dropped) onFileChange(dropped);
-  }, [onFileChange]);
+    if (disabled) return;
+    const dropped = Array.from(e.dataTransfer.files);
+    if (dropped.length > 0) onFilesAdded(dropped);
+  }, [onFilesAdded, disabled]);
 
   return (
     <div
       role="button"
       tabIndex={0}
-      onDragOver={e => { e.preventDefault(); setDragging(true); }}
+      aria-disabled={disabled}
+      onDragOver={e => { if (!disabled) { e.preventDefault(); setDragging(true); } }}
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
-      onClick={() => inputRef.current?.click()}
-      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click(); }}
+      onClick={() => !disabled && inputRef.current?.click()}
+      onKeyDown={e => { if (!disabled && (e.key === 'Enter' || e.key === ' ')) inputRef.current?.click(); }}
       className={`
-        border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
-        ${dragging ? 'border-burgundy bg-burgundy/5' : 'border-gray-200 hover:border-burgundy/50 hover:bg-gray-50'}
+        border-2 border-dashed rounded-lg p-6 text-center transition-colors
+        ${disabled ? 'opacity-50 cursor-not-allowed border-gray-200'
+          : dragging ? 'border-burgundy bg-burgundy/5 cursor-pointer'
+          : 'border-gray-200 hover:border-burgundy/50 hover:bg-gray-50 cursor-pointer'}
       `}
     >
       <input
         ref={inputRef}
         type="file"
         accept={ACCEPTED_EXTENSIONS}
+        multiple
         className="hidden"
-        onChange={e => { const f = e.target.files?.[0]; if (f) onFileChange(f); }}
+        onChange={e => {
+          const picked = Array.from(e.target.files ?? []);
+          if (picked.length > 0) onFilesAdded(picked);
+          if (inputRef.current) inputRef.current.value = '';
+        }}
       />
-      {file ? (
-        <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700">
-          <FileText className="w-5 h-5 text-burgundy" />
-          <span>{file.name}</span>
-          <span className="text-gray-400">({(file.size / 1024).toFixed(0)} KB)</span>
+      <div className="space-y-1.5">
+        <UploadCloud className="w-8 h-8 mx-auto text-gray-400" />
+        <p className="text-sm font-medium text-gray-600">Drop files or click to browse</p>
+        <p className="text-xs text-gray-400">PDF &middot; DOCX &middot; Markdown &middot; TXT &middot; Multiple files allowed</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Upload queue item ─────────────────────────────────────────────────────────
+
+function QueueItemRow({
+  item,
+  onRemove,
+}: {
+  item:     QueueItem;
+  onRemove: () => void;
+}) {
+  const canRemove = item.status === 'queued' || item.status === 'done' || item.status === 'error';
+
+  const statusIcon = (() => {
+    switch (item.status) {
+      case 'queued':
+        return <Clock className="w-4 h-4 text-gray-400" />;
+      case 'parsing':
+      case 'ingesting':
+        return <Loader2 className="w-4 h-4 text-burgundy animate-spin" />;
+      case 'done':
+        return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+      case 'error':
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
+    }
+  })();
+
+  const rowBg =
+    item.status === 'done'  ? 'bg-green-50 border-green-200' :
+    item.status === 'error' ? 'bg-red-50 border-red-200'     :
+    item.status === 'parsing' || item.status === 'ingesting' ? 'bg-blue-50 border-blue-200' :
+    'bg-white border-gray-200';
+
+  return (
+    <div className={`border rounded-md px-3 py-2 ${rowBg}`}>
+      <div className="flex items-center gap-2.5 text-sm">
+        <FileText className="w-4 h-4 text-gray-400 flex-shrink-0" />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-800 truncate">{item.file.name}</span>
+            <span className="text-xs text-gray-400 flex-shrink-0">
+              {(item.file.size / 1024).toFixed(0)} KB
+            </span>
+          </div>
+          {item.message && (
+            <p className="text-xs text-gray-600 mt-0.5 truncate">{item.message}</p>
+          )}
         </div>
-      ) : (
-        <div className="space-y-1.5">
-          <UploadCloud className="w-8 h-8 mx-auto text-gray-400" />
-          <p className="text-sm font-medium text-gray-600">Drop a file or click to browse</p>
-          <p className="text-xs text-gray-400">PDF · DOCX · Markdown · TXT</p>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {statusIcon}
+          {canRemove && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-gray-400 hover:text-gray-700"
+              onClick={onRemove}
+              aria-label={`Remove ${item.file.name}`}
+            >
+              <X className="w-3.5 h-3.5" />
+            </Button>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -316,11 +389,11 @@ interface ProductPanelProps {
 }
 
 function ProductPanel({ slug, label, session }: ProductPanelProps) {
-  const [docs,        setDocs]        = useState<DocSummary[]>([]);
-  const [loading,     setLoading]     = useState(false);
-  const [file,        setFile]        = useState<File | null>(null);
-  const [docType,     setDocType]     = useState<DocTypeValue>('wording');
-  const [uploadState, setUploadState] = useState<UploadState>({ status: 'idle', message: '' });
+  const [docs,       setDocs]       = useState<DocSummary[]>([]);
+  const [loading,    setLoading]    = useState(false);
+  const [queue,      setQueue]      = useState<QueueItem[]>([]);
+  const [docType,    setDocType]    = useState<DocTypeValue>('wording');
+  const [processing, setProcessing] = useState(false);
 
   const loadDocs = useCallback(async () => {
     setLoading(true);
@@ -333,57 +406,101 @@ function ProductPanel({ slug, label, session }: ProductPanelProps) {
 
   useEffect(() => { void loadDocs(); }, [loadDocs]);
 
-  const handleIngest = async () => {
-    if (!file) return;
+  const handleFilesAdded = (files: File[]) => {
+    const newItems: QueueItem[] = files.map((f, i) => ({
+      id:      `${Date.now()}-${i}-${f.name}`,
+      file:    f,
+      status:  'queued',
+      message: '',
+    }));
+    setQueue(prev => [...prev, ...newItems]);
+  };
 
-    setUploadState({ status: 'parsing', message: `Parsing ${file.name}…` });
+  const handleRemoveItem = (id: string) => {
+    setQueue(prev => prev.filter(it => it.id !== id));
+  };
+
+  const handleClearCompleted = () => {
+    setQueue(prev => prev.filter(it => it.status !== 'done' && it.status !== 'error'));
+  };
+
+  const handleClearAll = () => {
+    setQueue([]);
+  };
+
+  const updateItem = (id: string, patch: Partial<QueueItem>) => {
+    setQueue(prev => prev.map(it => (it.id === id ? { ...it, ...patch } : it)));
+  };
+
+  const processItem = async (item: QueueItem): Promise<void> => {
+    updateItem(item.id, { status: 'parsing', message: 'Parsing…' });
 
     let content: string;
     try {
-      content = await extractText(file);
+      content = await extractText(item.file);
     } catch (err) {
-      setUploadState({
+      updateItem(item.id, {
         status:  'error',
-        message: `Failed to parse file: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        message: `Parse failed: ${err instanceof Error ? err.message : 'Unknown error'}`,
       });
       return;
     }
 
     if (!content.trim()) {
-      setUploadState({ status: 'error', message: 'No text could be extracted from the file.' });
+      updateItem(item.id, {
+        status:  'error',
+        message: 'No text could be extracted from the file.',
+      });
       return;
     }
 
     const wordCount = content.trim().split(/\s+/).length;
-    setUploadState({ status: 'ingesting', message: `Ingesting ~${wordCount.toLocaleString()} words…` });
+    updateItem(item.id, {
+      status:  'ingesting',
+      message: `Ingesting ~${wordCount.toLocaleString()} words…`,
+    });
 
     try {
       const result = await callEdgeFn(session.access_token, {
         action:       'ingest',
         product_slug: slug,
         doc_type:     docType,
-        filename:     file.name,
+        filename:     item.file.name,
         content,
       });
 
       if (!result.success) {
-        setUploadState({ status: 'error', message: result.error ?? 'Ingestion failed.' });
+        updateItem(item.id, {
+          status:  'error',
+          message: result.error ?? 'Ingestion failed.',
+        });
         return;
       }
 
-      setUploadState({
+      updateItem(item.id, {
         status:  'done',
         message: `Done — ${result.chunks_inserted} chunks ingested.`,
         chunks:  result.chunks_inserted,
       });
-      setFile(null);
-      void loadDocs();
     } catch (err) {
-      setUploadState({
+      updateItem(item.id, {
         status:  'error',
         message: `Network error: ${err instanceof Error ? err.message : 'Unknown error'}`,
       });
     }
+  };
+
+  const handleIngestAll = async () => {
+    if (processing) return;
+    const pending = queue.filter(it => it.status === 'queued');
+    if (pending.length === 0) return;
+
+    setProcessing(true);
+    for (const item of pending) {
+      await processItem(item);
+    }
+    setProcessing(false);
+    void loadDocs();
   };
 
   const handleDeleteFile = async (filename: string) => {
@@ -403,7 +520,10 @@ function ProductPanel({ slug, label, session }: ProductPanelProps) {
     if (result.success) void loadDocs();
   };
 
-  const isIngesting = uploadState.status === 'parsing' || uploadState.status === 'ingesting';
+  const pendingCount   = queue.filter(it => it.status === 'queued').length;
+  const completedCount = queue.filter(it => it.status === 'done').length;
+  const errorCount     = queue.filter(it => it.status === 'error').length;
+  const hasCompleted   = completedCount > 0 || errorCount > 0;
 
   return (
     <div className="space-y-6">
@@ -499,16 +619,21 @@ function ProductPanel({ slug, label, session }: ProductPanelProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Upload new document</CardTitle>
+          <CardTitle className="text-base">Upload new documents</CardTitle>
           <CardDescription className="text-xs">
-            Uploading a file with the same name replaces its existing chunks.
+            Queue one or more files — they'll be ingested sequentially. Uploading a file with the
+            same name replaces its existing chunks.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor={`doctype-${slug}`}>Document type</Label>
-              <Select value={docType} onValueChange={v => setDocType(v as DocTypeValue)}>
+              <Label htmlFor={`doctype-${slug}`}>Document type (applies to all files)</Label>
+              <Select
+                value={docType}
+                onValueChange={v => setDocType(v as DocTypeValue)}
+                disabled={processing}
+              >
                 <SelectTrigger id={`doctype-${slug}`}>
                   <SelectValue />
                 </SelectTrigger>
@@ -523,38 +648,61 @@ function ProductPanel({ slug, label, session }: ProductPanelProps) {
             </div>
           </div>
 
-          <UploadZone file={file} onFileChange={setFile} />
+          <UploadZone onFilesAdded={handleFilesAdded} disabled={processing} />
 
-          {uploadState.status !== 'idle' && (
-            <div className={`rounded-md px-3 py-2 text-sm ${
-              uploadState.status === 'done'  ? 'bg-green-50 text-green-800 border border-green-200' :
-              uploadState.status === 'error' ? 'bg-red-50 text-red-800 border border-red-200' :
-              'bg-blue-50 text-blue-800 border border-blue-200'
-            }`}>
-              {isIngesting && (
+          {queue.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-medium text-gray-600">
+                  {queue.length} file{queue.length !== 1 ? 's' : ''} in queue
+                  {processing && ' — processing…'}
+                </p>
+                {hasCompleted && !processing && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-gray-500 hover:text-gray-700"
+                    onClick={handleClearCompleted}
+                  >
+                    Clear completed
+                  </Button>
+                )}
+              </div>
+              <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+                {queue.map(item => (
+                  <QueueItemRow
+                    key={item.id}
+                    item={item}
+                    onRemove={() => handleRemoveItem(item.id)}
+                  />
+                ))}
+              </div>
+              {processing && (
                 <Progress
-                  className="h-1.5 mb-1.5"
-                  value={uploadState.status === 'ingesting' ? 70 : 20}
+                  className="h-1.5"
+                  value={queue.length > 0
+                    ? ((completedCount + errorCount) / queue.length) * 100
+                    : 0}
                 />
               )}
-              {uploadState.message}
             </div>
           )}
 
           <div className="flex gap-2">
             <Button
-              onClick={() => void handleIngest()}
-              disabled={!file || isIngesting}
+              onClick={() => void handleIngestAll()}
+              disabled={pendingCount === 0 || processing}
               className="bg-burgundy hover:bg-burgundy/90 text-white"
             >
-              {isIngesting ? 'Processing…' : 'Ingest document'}
+              {processing
+                ? 'Processing…'
+                : pendingCount > 0
+                  ? `Ingest ${pendingCount} file${pendingCount !== 1 ? 's' : ''}`
+                  : 'Ingest documents'}
             </Button>
-            {file && (
-              <Button
-                variant="outline"
-                onClick={() => { setFile(null); setUploadState({ status: 'idle', message: '' }); }}
-              >
-                Clear
+            {queue.length > 0 && !processing && (
+              <Button variant="outline" onClick={handleClearAll}>
+                Clear all
               </Button>
             )}
           </div>
