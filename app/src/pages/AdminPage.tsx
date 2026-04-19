@@ -125,6 +125,7 @@ async function callEdgeFn(
     method:  'POST',
     headers: {
       'Content-Type':  'application/json',
+      'apikey':        import.meta.env.VITE_SUPABASE_ANON_KEY as string,
       'Authorization': `Bearer ${token}`,
     },
     body: JSON.stringify(body),
