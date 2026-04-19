@@ -1,2 +1,15 @@
 .vercel
 .env*.local
+
+# Ingestion script secrets
+scripts/.env
+
+# Node modules
+scripts/node_modules/
+
+# Supabase local dev
+supabase/.temp/
+supabase/.branches/
+
+# Cursor IDE (contains MCP access tokens)
+.cursor/

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const products = [
   {
@@ -170,6 +170,9 @@ export function Products() {
               </DialogTitle>
             </div>
           </DialogHeader>
+          <DialogDescription className="sr-only">
+            {selectedProduct?.description}
+          </DialogDescription>
           <div className="space-y-4">
             <p className="text-gray-600 leading-relaxed">
               {selectedProduct?.details}
@@ -187,13 +190,25 @@ export function Products() {
             </div>
             <Button 
               onClick={() => {
+                const title = selectedProduct?.title ?? '';
                 setSelectedProduct(null);
-                document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+                window.dispatchEvent(
+                  new CustomEvent('eve:open', { detail: { productContext: title } }),
+                );
               }}
               className="w-full bg-[#8B1E1E] hover:bg-[#6B1717] text-white font-semibold"
             >
-              Speak to a Partner
+              Chat with EVE
             </Button>
+            <button
+              onClick={() => {
+                setSelectedProduct(null);
+                document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full text-center text-sm text-gray-500 hover:text-[#8B1E1E] transition-colors mt-1"
+            >
+              Speak to a partner directly →
+            </button>
           </div>
         </DialogContent>
       </Dialog>
