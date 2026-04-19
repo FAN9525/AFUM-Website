@@ -4,10 +4,74 @@ import { X, Send, MessageCircle, ChevronDown } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useEveChat } from '@/hooks/use-eve-chat';
 import type { LeadFormData } from '@/types';
 
-// ── Lead form schema ───────────────────────────────────────────────────────────
+// ── Assistant message renderer ────────────────────────────────────────────────
+
+function AssistantMessage({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        h1: ({ children }) => (
+          <h1 className="text-base font-semibold text-gray-900 mt-4 mb-1 first:mt-0 leading-snug border-b border-gray-200 pb-1">
+            {children}
+          </h1>
+        ),
+        h2: ({ children }) => (
+          <h2 className="text-sm font-semibold text-gray-900 mt-3 mb-1 first:mt-0 leading-snug">
+            {children}
+          </h2>
+        ),
+        h3: ({ children }) => (
+          <h3 className="text-sm font-semibold text-gray-700 mt-2 mb-0.5 first:mt-0">
+            {children}
+          </h3>
+        ),
+        p: ({ children }) => (
+          <p className="mb-2 last:mb-0 leading-relaxed text-gray-800">
+            {children}
+          </p>
+        ),
+        ul: ({ children }) => (
+          <ul className="list-disc pl-4 mb-2 space-y-0.5 last:mb-0">
+            {children}
+          </ul>
+        ),
+        ol: ({ children }) => (
+          <ol className="list-decimal pl-4 mb-2 space-y-0.5 last:mb-0">
+            {children}
+          </ol>
+        ),
+        li: ({ children }) => (
+          <li className="leading-relaxed text-gray-800">{children}</li>
+        ),
+        strong: ({ children }) => (
+          <strong className="font-semibold text-gray-900">{children}</strong>
+        ),
+        em: ({ children }) => (
+          <em className="italic text-gray-700">{children}</em>
+        ),
+        code: ({ children }) => (
+          <code className="bg-gray-200 rounded px-1 py-0.5 text-xs font-mono text-gray-800">
+            {children}
+          </code>
+        ),
+        hr: () => <hr className="border-gray-300 my-2" />,
+        blockquote: ({ children }) => (
+          <blockquote className="border-l-2 border-burgundy pl-3 my-2 text-gray-600 italic">
+            {children}
+          </blockquote>
+        ),
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
 
 const leadSchema = z.object({
   name:  z.string().min(2, 'Please enter your name'),
@@ -239,10 +303,12 @@ export function EveWidget({ productContext = '', forceOpen, onOpenHandled }: Eve
                     className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                       msg.role === 'user'
                         ? 'bg-[#8B1E1E] text-white rounded-br-sm'
-                        : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                        : 'bg-gray-100 text-gray-800 rounded-bl-sm max-w-[90%]'
                     }`}
                   >
-                    {msg.content}
+                    {msg.role === 'assistant'
+                      ? <AssistantMessage content={msg.content} />
+                      : msg.content}
                   </div>
                 </motion.div>
               ))}
