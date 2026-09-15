@@ -59,8 +59,7 @@ export function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <a
-            href="#home"
-            onClick={(e) => { e.preventDefault(); scrollToSection('#home'); }}
+            href="/"
             className="flex items-center group"
           >
             <img
