@@ -1,27 +1,22 @@
 import { Linkedin, Facebook, Phone, Mail, MapPin } from 'lucide-react';
+import { handleHomeSectionClick } from '@/lib/section-nav';
 
 const quickLinks = [
-  { name: 'Home', href: '#home' },
-  { name: 'About Us', href: '#about' },
-  { name: 'Broker Portal', href: '#benefits' },
-  { name: 'Get a Quote', href: '#contact' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Home', href: '/' },
+  { name: 'About Us', href: '/#about' },
+  { name: 'Broker Portal', href: '/#benefits' },
+  { name: 'Get a Quote', href: '/#contact' },
+  { name: 'Contact', href: '/#contact' },
 ];
 
 const products = [
-  { name: 'Domestic Insurance', href: '#products' },
-  { name: 'Commercial Insurance', href: '#products' },
-  { name: 'Agri Insurance', href: '#products' },
-  { name: 'Hospitality Insurance', href: '#products' },
+  { name: 'Domestic Insurance', href: '/#products' },
+  { name: 'Commercial Insurance', href: '/#products' },
+  { name: 'Agri Insurance', href: '/#products' },
+  { name: 'Hospitality Insurance', href: '/#products' },
 ];
 
 export function Footer() {
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
   
   return (
     <footer className="bg-[#1a1a2e] text-white relative overflow-hidden">
@@ -40,7 +35,7 @@ export function Footer() {
         <div className="py-16 grid md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <a href="#home" onClick={(e) => { e.preventDefault(); scrollToSection('#home'); }} className="block mb-6">
+            <a href="/" onClick={(e) => handleHomeSectionClick(e, '/')} className="block mb-6">
               <img 
                 src="/images/af-logo.png" 
                 alt="Admin Focus Underwriting Managers" 
@@ -81,7 +76,7 @@ export function Footer() {
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                    onClick={(e) => handleHomeSectionClick(e, link.href)}
                     className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm"
                   >
                     {link.name}
@@ -101,7 +96,7 @@ export function Footer() {
                 <li key={product.name}>
                   <a
                     href={product.href}
-                    onClick={(e) => { e.preventDefault(); scrollToSection(product.href); }}
+                    onClick={(e) => handleHomeSectionClick(e, product.href)}
                     className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm"
                   >
                     {product.name}

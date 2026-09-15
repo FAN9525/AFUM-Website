@@ -41,6 +41,16 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (isLoading) return;
+    const hash = window.location.hash;
+    if (!hash) return;
+    const timer = setTimeout(() => {
+      document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<{ productContext: string }>).detail;
       setEveProductContext(detail.productContext ?? '');

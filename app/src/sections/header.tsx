@@ -3,23 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { goToHomeSection, handleHomeSectionClick } from '@/lib/section-nav';
 
 const navLinks = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
+  { name: 'Home', href: '/' },
+  { name: 'About', href: '/#about' },
   { 
     name: 'Products', 
-    href: '#products',
+    href: '/#products',
     dropdown: [
-      { name: 'Domestic Insurance', href: '#products' },
-      { name: 'Commercial Insurance', href: '#products' },
-      { name: 'Agri Insurance', href: '#products' },
-      { name: 'Hospitality Insurance', href: '#products' },
+      { name: 'Domestic Insurance', href: '/#products' },
+      { name: 'Commercial Insurance', href: '/#products' },
+      { name: 'Agri Insurance', href: '/#products' },
+      { name: 'Hospitality Insurance', href: '/#products' },
     ]
   },
-  { name: 'Partnership', href: '#benefits' },
-  { name: 'Shorekeeper', href: '#shorekeeper' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'Partnership', href: '/#benefits' },
+  { name: 'Shorekeeper', href: '/#shorekeeper' },
+  { name: 'Contact', href: '/#contact' },
 ];
 
 export function Header() {
@@ -35,11 +36,8 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  const onNavClick = (event: { preventDefault: () => void }, href: string) => {
+    handleHomeSectionClick(event, href);
     setIsMobileMenuOpen(false);
     setActiveDropdown(null);
   };
@@ -80,7 +78,7 @@ export function Header() {
               >
                 <a
                   href={link.href}
-                  onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                  onClick={(e) => onNavClick(e, link.href)}
                   className="flex items-center gap-1 text-gray-700 hover:text-[#8B1E1E] font-medium transition-colors relative group"
                 >
                   {link.name}
@@ -102,7 +100,7 @@ export function Header() {
                         <a
                           key={item.name}
                           href={item.href}
-                          onClick={(e) => { e.preventDefault(); scrollToSection(item.href); }}
+                          onClick={(e) => onNavClick(e, item.href)}
                           className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-[#8B1E1E] transition-colors"
                         >
                           {item.name}
@@ -118,7 +116,7 @@ export function Header() {
           {/* CTA Button */}
           <div className="hidden lg:block">
             <Button 
-              onClick={() => scrollToSection('#contact')}
+              onClick={() => goToHomeSection('#contact')}
               className="bg-[#8B1E1E] hover:bg-[#6B1717] text-white font-semibold px-6"
             >
               Inquire
@@ -144,7 +142,7 @@ export function Header() {
                   <div key={link.name}>
                     <a
                       href={link.href}
-                      onClick={(e) => { e.preventDefault(); scrollToSection(link.href); }}
+                      onClick={(e) => onNavClick(e, link.href)}
                       className="text-lg font-medium text-gray-800 hover:text-[#8B1E1E] transition-colors"
                     >
                       {link.name}
@@ -155,7 +153,7 @@ export function Header() {
                           <a
                             key={item.name}
                             href={item.href}
-                            onClick={(e) => { e.preventDefault(); scrollToSection(item.href); }}
+                            onClick={(e) => onNavClick(e, item.href)}
                             className="text-sm text-gray-600 hover:text-[#8B1E1E] transition-colors"
                           >
                             {item.name}
@@ -166,7 +164,7 @@ export function Header() {
                   </div>
                 ))}
                 <Button 
-                  onClick={() => scrollToSection('#contact')}
+                  onClick={() => goToHomeSection('#contact')}
                   className="bg-[#8B1E1E] hover:bg-[#6B1717] text-white font-semibold w-full mt-4"
                 >
                   Inquire About Partnership
