@@ -158,9 +158,15 @@ export function Footer() {
                 Authorised Financial Services Provider (FSP 50086) | Underwritten by Guardrisk Insurance Company
               </p>
             </div>
-            <div className="flex gap-6">
-              <a href="#" className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm">
+            <div className="flex flex-wrap justify-center gap-6">
+              <a href="/privacy-policy" className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm">
                 Privacy Policy
+              </a>
+              <a href="/complaints" className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm">
+                Complaints
+              </a>
+              <a href="/tcf" className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm">
+                Treating Customers Fairly
               </a>
               <a href="#" className="text-gray-400 hover:text-[#8B1E1E] transition-colors text-sm">
                 Terms of Service

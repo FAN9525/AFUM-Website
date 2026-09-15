@@ -14,10 +14,22 @@ import { Footer } from './sections/footer';
 import ScrollIndicator from './components/ScrollIndicator';
 import { EveWidget } from './components/EveWidget';
 import { AdminPage } from './pages/AdminPage';
+import { ComplaintsPage } from './pages/ComplaintsPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
+import { TcfPage } from './pages/TcfPage';
 
 function App() {
   if (window.location.pathname.startsWith('/admin')) {
     return <AdminPage />;
+  }
+  if (window.location.pathname.startsWith('/complaints')) {
+    return <ComplaintsPage />;
+  }
+  if (window.location.pathname.startsWith('/privacy-policy')) {
+    return <PrivacyPolicyPage />;
+  }
+  if (window.location.pathname.startsWith('/tcf')) {
+    return <TcfPage />;
   }
   const [isLoading,         setIsLoading]         = useState(true);
   const [eveProductContext, setEveProductContext]  = useState('');
