@@ -20,21 +20,21 @@ const workflow = [
     step: '2',
     title: 'Acknowledgement',
     actor: 'AFUM',
-    timing: '2 business days',
+    timing: '24 hours',
     detail: 'AFUM acknowledges receipt and confirms understanding of the complaint.',
   },
   {
     step: '3',
     title: 'Investigation',
     actor: 'AFUM',
-    timing: 'Within 15 business days of registration',
+    timing: 'Within 7 working days of registration',
     detail: 'AFUM investigates as UMA; may request further information from the client or broker.',
   },
   {
     step: '4',
     title: 'Resolution',
     actor: 'AFUM',
-    timing: 'Within 15 business days',
+    timing: 'Within 7 working days',
     detail: "Where AFUM can resolve the matter within its mandate, the outcome is communicated in writing.",
   },
   {
@@ -76,15 +76,15 @@ export function ComplaintsPage() {
           <li>
             Email us at{' '}
             <a
-              href="mailto:info@adminfocus.co.za"
+              href="mailto:complaints@adminfocus.co.za"
               className="text-burgundy hover:text-burgundy-dark transition-colors"
             >
-              info@adminfocus.co.za
+              complaints@adminfocus.co.za
             </a>{' '}
             or call us with your policy number and a description of the issue.
           </li>
           <li>If you have a broker, you can also lodge the complaint through them.</li>
-          <li>We'll acknowledge receipt within 2 business days.</li>
+          <li>We'll acknowledge receipt within 24 hours.</li>
         </ol>
       </LegalSection>
 
