@@ -10,7 +10,7 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Address',
-    details: ['18 Water Street', 'Klipspruit Mall', 'Parys, 9585'],
+    details: ['No 48, Anglers Loft', 'Peninsula on Vaal', 'Oranjeville, 1995'],
   },
   {
     icon: Mail,
