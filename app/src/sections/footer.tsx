@@ -115,8 +115,8 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#8B1E1E] flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
-                  18 Water Street, Klipspruit Mall<br />
-                  Parys, 9585, South Africa
+                  No 48, Anglers Loft, Peninsula on Vaal<br />
+                  Oranjeville, 1995
                 </span>
               </li>
               <li className="flex items-center gap-3">
